@@ -3,6 +3,7 @@ import NewsItem from './NewsItem'
 import Spinner from './Spinner';
 import PropTypes from 'prop-types';
 import InfiniteScroll from "react-infinite-scroll-component";
+import LoadingBar from 'react-top-loading-bar';
 
 export class News extends Component {
     static defaultProps = {
@@ -28,15 +29,18 @@ export class News extends Component {
             articles : [],
             loading : true,
             page : 1,
+            totalResults : 0
         }
         document.title = `${this.CapitalizeFirstLetter(this.props.category)} - NewsEagle`;
 
     }
 
     async updateNews() {
+        this.props.setProgress(10);
         let url = `https://newsapi.org/v2/top-headlines?country=${this.props.country}&category=${this.props.category}&apiKey=9e1bd06f25544f399975122857782f19&page=${this.state.page}&pageSize=${this.props.pageSize}`;
-        this.setState({loading: true})
+        // this.setState({loading: true})
         let data = await fetch(url);
+        this.props.setProgress(30);
         let parsedData = await data.json();
         console.log(parsedData);
         this.setState({
@@ -44,6 +48,7 @@ export class News extends Component {
             totalResults: parsedData.totalResults,
             loading : false
         })
+        this.props.setProgress(100);
     }
 
     async componentDidMount(){
